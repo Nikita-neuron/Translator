@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Thread() {
             @Override
             public void run() {
-//                String word = "hello+wo";
                 String lang = "en";
                 String request = String.format("https://predictor.yandex.net/api/v1/predict.json/complete?key=%s&q=%s&lang=%s", KEY, word, lang);
                 try {
@@ -48,24 +47,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void run() {
                             try {
-//                                JSONArray jsonArray = new JSONArray(response);
                                 JSONObject jsonObject = new JSONObject(response);
-//                                JSONObject jsonObject1 = jsonObject.getJSONObject("text");
                                 JSONArray jsonArray = (JSONArray) jsonObject.get("text");
-//                                String r = (String) jsonObject.get("text");
-//                                String[] res = (String[]) jsonObject.get("text");
-                                String text = "";
-//                                for (int i = 0; i < jsonArray.length(); i++) {
-//                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                                    if (jsonObject.has("text")) {
-//                                        text = (String) jsonObject.get("text");
-//                                    }
+                                String text = (String) jsonArray.get(0);
+//                                int pos = response.indexOf("\"text\":[\"");
+//                                if (pos >= 0) {
+//                                    int pos2 = response.indexOf("\"]", pos + 1);
+//                                    editText.setText(response.substring(pos + 9, pos2));
 //                                }
-                                int pos = response.indexOf("\"text\":[\"");
-                                if (pos >= 0) {
-                                    int pos2 = response.indexOf("\"]", pos + 1);
-                                    editText.setText(response.substring(pos + 9, pos2));
-                                }
                                 editText.setText(text);
                             } catch (JSONException e) {
                                 e.printStackTrace();
