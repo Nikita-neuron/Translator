@@ -1,11 +1,14 @@
 package com.example.translator;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +24,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText editText;
     Button button;
 
-    private String KEY = "pdct.1.1.20210412T141130Z.7fe24c3464fb114c.a91bd86212d96a2ed24c9e0a44fc721cd4e118ea";
+    Spinner spinner;
+
+    private final String KEY = "pdct.1.1.20210412T141130Z.7fe24c3464fb114c.a91bd86212d96a2ed24c9e0a44fc721cd4e118ea";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +34,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         editText = findViewById(R.id.word);
+        spinner = findViewById(R.id.language);
         button = findViewById(R.id.send);
         button.setOnClickListener(this);
     }
 
-    void test(String word) {
+    void test(String line, String language) {
         new Thread() {
             @Override
             public void run() {
-                String lang = "en";
-                String request = String.format("https://predictor.yandex.net/api/v1/predict.json/complete?key=%s&q=%s&lang=%s", KEY, word, lang);
+                String[] words = line.split(" ");
+                String word = line.replaceAll(" ", "+");
+                String request = String.format("https://predictor.yandex.net/api/v1/predict.json/complete?key=%s&q=%s&lang=%s", KEY, word, language);
                 try {
                     URLConnection connection = new URL(request).openConnection();
                     Scanner in = new Scanner(connection.getInputStream());
@@ -55,7 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                                    int pos2 = response.indexOf("\"]", pos + 1);
 //                                    editText.setText(response.substring(pos + 9, pos2));
 //                                }
-                                editText.setText(text);
+                                StringBuilder result = new StringBuilder();
+                                for (int i = 0; i < words.length - 2; i++) result.append(words[i]).append(" ");
+                                result.append(text);
+                                editText.setText(result.toString());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -68,13 +78,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }.start();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.send) {
-            String word = editText.getText().toString();
-            word = word.replaceAll(" ", "+");
-            test(word);
+            String line = editText.getText().toString();
 
+            String language = spinner.getSelectedItem().toString();
+            if (language.equals("Русский")) language = "ru";
+            if (language.equals("English")) language = "en";
+
+            test(line, language);
         }
     }
 }
