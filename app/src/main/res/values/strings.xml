@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Translator</string>
     <string-array name="languages">
-        <item>Русский</item>
         <item>English</item>
+        <item>Русский</item>
     </string-array>
 </resources>
